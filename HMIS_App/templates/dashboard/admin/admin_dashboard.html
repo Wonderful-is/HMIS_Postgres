@@ -1,0 +1,217 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Limbe Regional Hospital</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/admin_style.css' %}">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <img src="{% static 'images/regional-logo.webp' %}" alt="Logo" class="nav-logo">
+                <h1 class="hospital-name">Limbe Regional Hospital</h1>
+            </div>
+            <div class="nav-right">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Welcome, {{ username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Toggle -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Main Content Wrapper -->
+    <div class="page-wrapper">
+        <!-- Fix the sidebar items first -->
+<div class="sidebar">
+    <ul class="sidebar-menu">
+        <li class="sidebar-item">
+            <a href="#" class="active" data-content="usermanagement">  <!-- Changed to match content ID -->
+                <i class="fas fa-home"></i>
+                <span>User managment</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="#" data-content="rolemanagement">  <!-- Changed ID -->
+                <i class="fas fa-calendar-check"></i>
+                <span>Role Managment</span>
+            </a>
+        </li>
+        <li class="sidebar-item">
+            <a href="#" data-content="departmentmanagement">  <!-- Changed ID -->
+                <i class="fas fa-chart-bar"></i>
+                <span>Department Managment</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<!-- Fix the content sections -->
+<div class="main-content">
+    <!-- User Management -->
+        <div class="table-wrapper">
+            <div class="dashboard-content active" id="usermanagement">
+                <div class="content-header">
+                    <h2><i class="fas fa-home"></i> User Management</h2>
+                </div>
+                
+                <div class="table-wrapper">
+                    <div class="register-btn-container">
+                        <button class="register-btn">
+                            <i class="fas fa-plus"></i>
+                            Register New Staff
+                        </button>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Staff ID</th>
+                                <th>Name</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Address</th>
+                                <th>Role</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.staffid }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.phone }}</td>
+                                <td>{{ user.address }}</td>
+                                <td>{{ user.role }}</td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <button class="edit-btn" title="Edit">
+                                            <i class="fas fa-pen"></i>
+                                        </button>
+                                        <button class="delete-btn" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center">No staff members found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- Your table content -->
+        </div>
+    </div>
+
+    <!-- Role Management -->
+    <div class="dashboard-content" id="rolemanagement">
+        <div class="content-header">
+            <h2><i class="fas fa-calendar-check"></i> Role Management</h2>
+        </div>
+        <div class="table-wrapper">
+            <!-- Role management content here -->
+            <h3>Role Management Content</h3>
+        </div>
+    </div>
+
+    <!-- Department Management -->
+    <div class="dashboard-content" id="departmentmanagement">
+        <div class="content-header">
+            <h2><i class="fas fa-chart-bar"></i> Department Management</h2>
+        </div>
+        <div class="table-wrapper">
+            <!-- Department management content here -->
+            <h3>Department Management Content</h3>
+        </div>
+    </div>
+</div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-item a');
+            const contents = document.querySelectorAll('.dashboard-content');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+
+            // Toggle sidebar
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                mainContent.classList.toggle('sidebar-active');
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
+            });
+
+            // Handle content switching
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Update active states
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    contents.forEach(c => c.classList.remove('active'));
+                    
+                    this.classList.add('active');
+                    const contentId = this.getAttribute('data-content');
+                    document.getElementById(contentId).classList.add('active');
+
+                    // Close sidebar on mobile
+                    if (window.innerWidth <= 768) {
+                        sidebar.classList.remove('active');
+                        mainContent.classList.remove('sidebar-active');
+                        sidebarToggle.querySelector('i').classList.replace('fa-times', 'fa-bars');
+                    }
+                });
+            });
+        });
+        // Add this to your existing script
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('registerModal');
+            const registerBtn = document.querySelector('.register-btn');
+            const closeBtn = document.querySelector('.close');
+            const cancelBtn = document.querySelector('.cancel-btn');
+
+            registerBtn.addEventListener('click', function() {
+                modal.style.display = 'block';
+            });
+
+            closeBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            cancelBtn.addEventListener('click', function() {
+                modal.style.display = 'none';
+            });
+
+            window.addEventListener('click', function(event) {
+                if (event.target == modal) {
+                    modal.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
