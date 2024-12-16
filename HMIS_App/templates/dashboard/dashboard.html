@@ -1,1 +1,85 @@
-Hello!
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Limbe Regional Hospital</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/dashboard_style.css' %}">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <!-- Left Section -->
+            <div class="nav-left">
+                <img src="{% static 'images/regional-logo.webp' %}" alt="Logo" class="nav-logo">
+                <h1 class="hospital-name">Limbe Regional Hospital</h1>
+            </div>
+            <!-- Right Section -->
+            <div class="nav-right">
+                <div class="user-info">
+                    <i class="fas fa-user"></i>
+                    <span>Welcome, {{ username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Role Selection Section -->
+        <div class="container">
+            <h2 class="section-title">Select Your Role</h2>
+            <div class="sections">
+                <div class="section">
+                    <i class="fas fa-laptop-medical"></i>
+                    <h3>Almoner</h3>
+                    <p>Manage patient registrations, payments, and financial records efficiently.</p>
+                </div>
+                
+                <div class="section">
+                    <i class="fas fa-user-nurse"></i>
+                    <h3>Nurse</h3>
+                    <p>Access patient records, manage treatments, and monitor vital signs.</p>
+                </div>
+                
+                <div class="section">
+                    <i class="fas fa-user-md"></i>
+                    <h3>Doctor</h3>
+                    <p>Review patient histories, make diagnoses, and prescribe treatments.</p>
+                </div>
+                
+                <div class="section">
+                    <i class="fas fa-vials"></i>
+                    <h3>Lab Technician</h3>
+                    <p>Process lab tests, manage results, and maintain lab records.</p>
+                </div>
+                
+                <div class="section">
+                    <i class="fas fa-notes-medical"></i>
+                    <h3>Major</h3>
+                    <p>Oversee hospital operations and coordinate departments.</p>
+                </div>
+                
+                <div class="section">
+                    <i class="fas fa-file-alt"></i>
+                    <h3>HMIS Office</h3>
+                    <p>Manage hospital data, generate reports, and analyze statistics.</p>
+                </div>
+                
+                <div class="section">
+                    <i class="fas fa-user-cog"></i>
+                    <h3>Admin</h3>
+                    <p>System administration and user management.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

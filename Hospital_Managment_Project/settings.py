@@ -48,6 +48,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+     'HMIS_App.middleware.UserSessionMiddleware',
 ]
 
 ROOT_URLCONF = "Hospital_Managment_Project.urls"
@@ -122,7 +123,6 @@ STATICFILES_DIRS = [
     BASE_DIR / 'HMIS_App' / 'static',
 ]
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
