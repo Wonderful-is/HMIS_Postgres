@@ -1,9 +1,14 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/home_style.css' %}">
+{% endblock %}
+
 {% block title %}Limbe Regional Hospital - Data Management System{% endblock %}
 
 {% block content %}
+
     <!-- Hero Section -->
     <section class="hero">
         <div class="container hero-content">
