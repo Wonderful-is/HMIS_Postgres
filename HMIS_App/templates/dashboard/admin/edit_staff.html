@@ -1,7 +1,7 @@
 {% extends 'dashboard/admin/base_admin.html' %}
 {% load static %}
 
-{% block title %}Register New Staff - Limbe Regional Hospital{% endblock %}
+{% block title %}Edit Staff - Limbe Regional Hospital{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/register_staff.css' %}">
@@ -9,7 +9,7 @@
 
 {% block content %}
 <div class="content-header">
-    <h2><i class="fas fa-user-plus"></i> Register New Staff</h2>
+    <h2><i class="fas fa-user-edit"></i> Edit Staff</h2>
 </div>
 
 <div class="content-body">
@@ -23,7 +23,8 @@
             {% endfor %}
         </div>
         {% endif %}
-        <form method="POST" action="{% url 'register_staff' %}" class="registration-form">
+
+        <form method="POST" class="registration-form">
             {% csrf_token %}
             
             <div class="form-section">
@@ -31,25 +32,27 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" required>
+                        <input type="text" id="name" name="name" value="{{ staff.name }}" required>
                     </div>
                     <div class="form-group">
                         <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" required>
+                        <input type="tel" id="phone" name="phone" value="{{ staff.phonenumber }}" required>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
+                        <input type="email" id="email" name="email" value="{{ staff.email }}" required>
                     </div>
                     <div class="form-group">
                         <label for="role">Role</label>
                         <select id="role" name="role" required>
                             <option value="">Select Role</option>
                             {% for role in roles %}
-                                <option value="{{ role.rolename }}">{{ role.rolename }}</option>
+                                <option value="{{ role.rolename }}" {% if role.rolename == staff.rolename %}selected{% endif %}>
+                                    {{ role.rolename }}
+                                </option>
                             {% endfor %}
                         </select>
                     </div>
@@ -57,7 +60,7 @@
 
                 <div class="form-group">
                     <label for="address">Address</label>
-                    <textarea id="address" name="address" required></textarea>
+                    <textarea id="address" name="address" required>{{ staff.address }}</textarea>
                 </div>
             </div>
 
@@ -66,11 +69,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" id="username" name="username" required>
+                        <input type="text" id="username" name="username" value="{{ staff.username }}" required>
                     </div>
                     <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" id="password" name="password" required>
+                        <input type="password" id="password" name="password" placeholder="Leave blank to keep current password">
                     </div>
                 </div>
             </div>
@@ -78,9 +81,10 @@
             <div class="form-actions">
                 <a href="{% url 'staffmanagement' %}" class="cancel-btn">
                     <i class="fas fa-times"></i> Cancel
-                </a>                
+                </a>
+                
                 <button type="submit" class="submit-btn">
-                    <i class="fas fa-save"></i> Register Staff
+                    <i class="fas fa-save"></i> Update Staff
                 </button>
             </div>
         </form>

@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard - Limbe Regional Hospital{% endblock %}</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/base_admin_style.css' %}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <div class="nav-left">
+                <img src="{% static 'images/regional-logo.webp' %}" alt="Logo" class="nav-logo">
+                <h1 class="hospital-name">Limbe Regional Hospital</h1>
+            </div>
+            <div class="nav-right">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Welcome, {{ username }}</span>
+                </div>
+                <a href="{% url 'logout' %}" class="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Toggle -->
+    <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <ul class="sidebar-menu">
+            {% block sidebar %}
+            <li class="sidebar-item">
+                <a href="{% url 'staffmanagement' %}" class="active">
+                    <i class="fas fa-users"></i>
+                    <span>Staff Management</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="{% rolemanagment % }">
+                    <i class="fas fa-user-tag"></i>
+                    <span>Role Management</span>
+                </a>
+            </li>
+            <li class="sidebar-item">
+                <a href="#">
+                    <i class="fas fa-building"></i>
+                    <span>Department Management</span>
+                </a>
+            </li>
+            {% endblock %}
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        {% block content %}{% endblock %}
+    </div>
+
+    {% block extra_js %}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarLinks = document.querySelectorAll('.sidebar-item a');
+            const sidebar = document.querySelector('.sidebar');
+            const mainContent = document.querySelector('.main-content');
+            const sidebarToggle = document.getElementById('sidebarToggle');
+
+            // Sidebar toggle
+            sidebarToggle.addEventListener('click', function() {
+                sidebar.classList.toggle('active');
+                mainContent.classList.toggle('sidebar-active');
+                const icon = this.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
+            });
+
+            // Active link handling
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    sidebarLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>

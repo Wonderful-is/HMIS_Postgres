@@ -1,0 +1,135 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Staff Management - Limbe Regional Hospital{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/staff_management_style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2><i class="fas fa-users"></i> Staff Management</h2>
+</div>
+
+<div class="content-body">
+    {% if messages %}
+    <div class="alerts-container">
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="table-wrapper">
+        <div class="action-bar">
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search staff...">
+                </div>
+            </div>
+            <a href="{% url 'register_staff' %}" class="register-btn">
+                <i class="fas fa-plus"></i>
+                Register New Staff
+            </a>            
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Staff ID</th>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr data-staffid="{{ user.staffid }}">
+                    <td>{{ user.staffid }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.phone }}</td>
+                    <td>{{ user.address }}</td>
+                    <td>{{ user.role }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{% url 'edit_staff' user.staffid %}" class="edit-btn" title="Edit">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <button class="delete-btn" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center">No staff members found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}  {# This line ensures the base template's JS is included #}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Action buttons functionality
+    const editButtons = document.querySelectorAll('.edit-btn');
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const staffId = row.querySelector('td:first-child').textContent;
+            // Add edit functionality
+        });
+    });
+
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const staffId = row.querySelector('td:first-child').textContent;
+            // Add delete functionality
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const tableRows = document.querySelectorAll('tbody tr');
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+
+        tableRows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const alerts = document.querySelectorAll('.alert');
+
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.style.opacity = '0';
+            setTimeout(() => alert.remove(), 500); // Remove element after fade-out
+        }, 3000); // Adjust duration (3000ms = 3 seconds) as needed
+    });
+});
+</script>
+{% endblock %}

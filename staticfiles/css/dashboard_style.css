@@ -6,6 +6,7 @@
     --border-color: #ddd;
 }
 
+/* Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -15,20 +16,30 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: var(--light-bg);
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
 }
 
 /* Top Navigation */
 .top-nav {
-    background-color: var(--primary-color);
-    padding: 1rem 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
     color: var(--white);
+    padding: 1rem 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(61, 150, 34, 0.1);
 }
 
 .nav-left {
@@ -43,16 +54,24 @@ body {
     object-fit: contain;
 }
 
+.hospital-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
 .nav-right {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .user-info {
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    background: rgba(255,255,255,0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
 }
 
 .logout-btn {
@@ -62,64 +81,122 @@ body {
     align-items: center;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
-    border-radius: 4px;
-    transition: background-color 0.3s;
+    border: 1px solid var(--white);
+    border-radius: 25px;
+    transition: all 0.3s ease;
 }
 
 .logout-btn:hover {
-    background-color: var(--secondary-color);
-}
-
-/* Sidebar */
-.sidebar {
-    width: 250px;
     background: var(--white);
-    height: calc(100vh - 73px);
-    position: fixed;
-    left: 0;
-    padding: 1rem 0;
-    box-shadow: 2px 0 4px rgba(0,0,0,0.1);
+    color: var(--primary-color);
 }
 
-.sidebar a {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 1rem 1.5rem;
-    color: #333;
-    text-decoration: none;
-    transition: all 0.3s;
-}
-
-.sidebar a:hover, .sidebar a.active {
-    background-color: var(--primary-color);
-    color: var(--white);
-}
 
 /* Main Content */
 .main-content {
-    margin-left: 250px;
-    padding: 2rem;
+    flex: 1;
+    padding: 2rem 0;
 }
 
-h2 {
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.section-title {
     color: var(--primary-color);
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-size: 2rem;
+}
+
+/* Role Sections Grid */
+.sections {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.section {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+/* Section Title */
+.section-title {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    text-align: center;
+    padding: 2rem;
+    background-color: var(--light-bg);
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+    font-weight: bold;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+
+
+
+.section:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+}
+
+.section i {
+    font-size: 2.5rem;
+    color: var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.section h3 {
+    color: var(--primary-color);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.section p {
+    color: #666;
+    line-height: 1.5;
+}
+
+/* Add to your dashboard_style.css */
+a .section {
+    color: inherit;  /* Keep original text color */
+    display: block;  /* Make the entire section clickable */
+}
+
+a:hover {
+    text-decoration: none;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .sidebar {
-        width: 100%;
-        height: auto;
-        position: relative;
+    .nav-container {
+        padding: 0 1rem;
     }
 
-    .main-content {
-        margin-left: 0;
+    .hospital-name {
+        font-size: 1.2rem;
     }
 
-    .nav-right {
-        gap: 1rem;
+    .user-info span {
+        display: none;
+    }
+
+    .sections {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 0 1rem;
+    }
+
+    .section {
+        padding: 1.5rem;
     }
 }

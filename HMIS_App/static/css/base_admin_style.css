@@ -1,0 +1,277 @@
+/* ---admin panel--------------- */
+:root {
+    --primary-color: #0056b3;
+    --secondary-color: #004494;
+    --white: #ffffff;
+    --light-bg: #f8f9fa;
+    --border-color: #ddd;
+    --sidebar-bg: #1a237e;
+    --sidebar-hover: #283593;
+    --text-light: #e8eaf6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: var(--light-bg);
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Top Navigation */
+.top-nav {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--white);
+    padding: 1rem 0;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+}
+
+.hospital-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 25px;
+}
+
+.logout-btn {
+    color: var(--white);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--white);
+    border-radius: 25px;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: var(--white);
+    color: var(--primary-color);
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+    position: fixed;
+    left: 20px;
+    top: 85px;
+    z-index: 1000;
+    background: var(--sidebar-bg);
+    color: var(--white);
+    border: none;
+    padding: 12px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle:hover {
+    background: var(--sidebar-hover);
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    left: -250px;
+    top: 90px;
+    width: 250px;
+    height: calc(100vh - 110px);
+    background: var(--sidebar-bg);
+    transition: all 0.3s ease;
+    z-index: 999;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    border-radius: 10px;
+    margin-left: 15px;
+}
+
+.sidebar.active {
+    left: 0;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 1rem 0;
+}
+
+.sidebar-item {
+    margin: 5px 10px;
+}
+
+.sidebar-item a {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    color: var(--text-light);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    gap: 12px;
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.sidebar-item a:hover,
+.sidebar-item a.active {
+    background: var(--sidebar-hover);
+    color: var(--white);
+    transform: translateX(5px);
+}
+
+.sidebar-item i {
+    width: 24px;
+    font-size: 1.1rem;
+    text-align: center;
+}
+
+/* Main Content */
+.main-content {
+    margin-left: 0;
+    padding: 2rem;
+    padding-top: 5rem;
+    transition: all 0.3s ease;
+    min-height: calc(100vh - 73px);
+}
+
+.main-content.sidebar-active {
+    margin-left: 250px;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+    display: none;
+}
+
+.dashboard-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.content-header {
+    background: var(--white);
+    padding: 1.5rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.content-header h2 {
+    color: var(--sidebar-bg);
+    font-size: 1.8rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Scrollbar Styling */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: var(--sidebar-bg);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: var(--sidebar-hover);
+    border-radius: 3px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+
+    .hospital-name {
+        font-size: 1.2rem;
+    }
+
+    .sidebar {
+        left: -100%;
+        width: 100%;
+        margin: 0;
+        top: 73px;
+        height: calc(100vh - 73px);
+        border-radius: 0;
+    }
+
+    .main-content.sidebar-active {
+        margin-left: 0;
+    }
+
+    .content-header {
+        padding: 1rem;
+    }
+
+    .content-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .user-info span {
+        display: none;
+    }
+}
+
+.dashboard-content {
+    display: none;
+}
+
+.dashboard-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
