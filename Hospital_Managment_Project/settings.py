@@ -130,12 +130,26 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
+# DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'Registration',
+#         'USER': 'postgres',
+#         'PASSWORD': 'ishimwe12345',
+#         'HOST': 'localhost',  # or your database host
+#         'PORT': '5432',      # default PostgreSQL port
+#     }
+# }
+
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'Registration',
+        'NAME': 'Hospital_Management',
         'USER': 'postgres',
         'PASSWORD': 'ishimwe12345',
         'HOST': 'localhost',  # or your database host

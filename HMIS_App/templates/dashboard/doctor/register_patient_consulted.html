@@ -1,0 +1,230 @@
+{% extends 'dashboard/doctor/base_doctor.html' %}
+{% load static %}
+
+{% block title %}Register Patient Consultation - Limbe Regional Hospital{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_staff.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2><i class="fas fa-user-plus"></i> Register Patient Consultation</h2>
+</div>
+
+<div class="content-body">
+    <div class="form-wrapper">
+        {% if messages %}
+            <div class="message-container">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <!-- Patient Search Form
+        <form method="GET" action="{% url 'search_patient_consulted' %}" class="search-form">
+            {% csrf_token %}
+            <h4>Search Patient</h4>
+            <div class="form-group">
+                <label for="search_patient_consulted">Search by Patient ID or Name:</label>
+                <input type="text" id="search_patient_consulted" name="search_patient_consulted" class="form-control" value="{{ search_patient_consulted }}" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Search</button>
+            </div>
+        </form> -->
+
+          <!-- Patient Search Form -->
+          <form method="GET" action="{% url 'search_patient_consulted' %}" class="search-form">
+            {% csrf_token %}
+            <h4>Search Patient</h4>
+            <div class="form-group search-container">
+                <label for="search_patient_consulted">Search by Patient ID or Name:</label>
+                <input type="text" 
+                       id="search_patient_consulted" 
+                       name="search_patient_consulted" 
+                       class="form-control" 
+                       autocomplete="off"
+                       value="{{ search_patient_consulted }}"
+                       oninput="filterPatients(this.value)">
+                <!-- Add the dropdown container for suggestions -->
+                <div id="patientSuggestions" class="patient-suggestions"></div>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Search</button>
+            </div>
+        </form>
+
+
+        {% if patient_data %}
+            <!-- Patient Found, Display Information -->
+            <div class="patient-info">
+                <h4>Patient Information</h4>
+                <p><strong>ID:</strong> {{ patient_data.patient_id }}</p>
+                <p><strong>Name:</strong> {{ patient_data.full_name }}</p>
+
+                <a href="{% url 'register_patient_consulted' patient_id=patient_data.patient_id %}" class="btn btn-primary">Register Consultation</a>
+            </div>
+        {% else %}
+            <div class="search-results">
+                <p>No patient found with the given search term.</p>
+            </div>
+        {% endif %}
+
+        {% if patient_data %}
+            <!-- Register Visit Form -->
+            <form method="POST" action="{% url 'register_patient_consulted' patient_id=patient_data.patient_id %}" class="registration-form">
+                {% csrf_token %}
+
+                <!-- Patient Information Section -->
+                <h4>Patient Information</h4>
+                <input type="hidden" name="patient_id" value="{{ patient_data.patient_id }}">
+                <div class="form-group">
+                    <label for="patient_name">Patient Name:</label>
+                    <input type="text" id="patient_name" name="patient_name" class="form-control" value="{{ patient_data.full_name }}" disabled>
+                    <br><br>
+                    <h4>Vital Sign by nurse </h4><br>
+                    <label for="height">Height:</label>
+                    <input type="text" id="height" name="height" class="form-control" value="{{ screening_data.height }}" readonly>
+
+                    <label for="weight">Weight:</label>
+                    <input type="text" id="weight" name="weight" class="form-control" value="{{ screening_data.weight }}" readonly>
+
+                    <label for="temperature">Temperature:</label>
+                    <input type="text" id="temperature" name="temperature" class="form-control" value="{{ screening_data.temperature }}" readonly>
+
+                    <label for="blood_pressure">Blood Pressure:</label>
+                    <input type="text" id="blood_pressure" name="blood_pressure" class="form-control" value="{{ screening_data.blood_pressure }}" readonly>
+                </div>
+
+                <h4>Consultation By Doctor</h4><br>
+                <div class="form-group">
+                    <label for="diagnosis">Diagnosis:</label>
+                    <input type="text" id="diagnosis" name="diagnosis" class="form-control" 
+                           value="{{ consultation_data.diagnosis|default:'' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="treatment">Treatment:</label>
+                    <input type="text" id="treatment" name="treatment" class="form-control" 
+                           value="{{ consultation_data.treatment|default:'' }}" required>
+                </div>
+                <div class="form-group">
+                    <label for="prescription">Prescription:</label>
+                    <input type="text" id="prescription" name="prescription" class="form-control" 
+                           value="{{ consultation_data.prescription|default:'' }}" required>
+                </div>
+
+                <div class="form-actions">
+                    <a href="{% url 'patient_consultation_management' %}" class="cancel-btn">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="submit-btn">
+                        <i class="fas fa-save"></i> Register Consulted Patient
+                    </button>
+                </div>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+
+<style>
+    .search-container {
+        position: relative;
+    }
+    
+    .patient-suggestions {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+    
+    .suggestion-item {
+        padding: 10px;
+        cursor: pointer;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .suggestion-item:hover {
+        background-color: #f5f5f5;
+    }
+    </style>
+    
+<!-- Modify the script section -->
+<script type="text/javascript">
+    // Wait for document to be ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Safely parse the authorized patients data
+        let authorizedPatients = [];
+        try {
+            authorizedPatients = JSON.parse('{{ authorized_patients|escapejs }}');
+        } catch (e) {
+            console.error('Error parsing authorized patients:', e);
+        }
+
+        function filterPatients(searchTerm) {
+            const suggestionsDiv = document.getElementById('patientSuggestions');
+            searchTerm = searchTerm.toLowerCase();
+            
+            if (!searchTerm) {
+                suggestionsDiv.style.display = 'none';
+                return;
+            }
+
+            const filteredPatients = authorizedPatients.filter(patient => 
+                patient.patient_id.toString().toLowerCase().includes(searchTerm) || 
+                patient.full_name.toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredPatients.length > 0) {
+                const html = filteredPatients.map(patient => `
+                    <div class="suggestion-item" onclick="selectPatient('${patient.patient_id}', '${patient.full_name}')">
+                        ${patient.full_name} (ID: ${patient.patient_id})
+                    </div>
+                `).join('');
+                
+                suggestionsDiv.innerHTML = html;
+                suggestionsDiv.style.display = 'block';
+            } else {
+                suggestionsDiv.innerHTML = '<div class="suggestion-item">No matches found</div>';
+                suggestionsDiv.style.display = 'block';
+            }
+        }
+
+        // Make filterPatients available globally
+        window.filterPatients = filterPatients;
+
+        function selectPatient(patientId, fullName) {
+            document.getElementById('search_patient_consulted').value = `${fullName} (ID: ${patientId})`;
+            document.getElementById('patientSuggestions').style.display = 'none';
+            // Submit the form
+            document.querySelector('.search-form').submit();
+        }
+
+        // Make selectPatient available globally
+        window.selectPatient = selectPatient;
+
+        // Close suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            const suggestionsDiv = document.getElementById('patientSuggestions');
+            const searchInput = document.getElementById('search_patient_consulted');
+            
+            if (e.target !== searchInput && !suggestionsDiv.contains(e.target)) {
+                suggestionsDiv.style.display = 'none';
+            }
+        });
+    });
+</script>
+    {% endblock %}

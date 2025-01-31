@@ -1,4 +1,4 @@
-Form Container
+/* Form Container */
 .form-wrapper {
     background: white;
     border-radius: 12px;
@@ -219,25 +219,4 @@ textarea:hover {
         width: 100%;
         justify-content: center;
     }
-}
-
-.message-container {
-    margin: 20px 0;
-}
-
-.alert {
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-.alert-success {
-    background-color: #d4edda;
-    color: #155724;
-}
-
-.alert-error,
-.alert-danger {
-    background-color: #f8d7da;
-    color: #721c24;
 }

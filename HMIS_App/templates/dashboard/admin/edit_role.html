@@ -1,0 +1,62 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Edit Role - Limbe Regional Hospital{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/register_role.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2><i class="fas fa-user-edit"></i> Edit Role</h2>
+</div>
+
+<div class="content-body">
+    <div class="form-wrapper">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="POST" class="registration-form">
+            {% csrf_token %}
+            
+    
+                <div class="form-section">
+                    <h3>Role Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="role_name">Role Name</label>
+                            <input type="text" id="role_name" name="role_name"  value="{{ role.role_name }}" required><br>
+                        </div>
+                    </div>
+                
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="role_description">Role Description</label>
+                            <textarea id="role_description" name="role_description" required>{{ role.role_description }}</textarea>
+                        </div>
+                    </div>                    
+                </div>
+            
+
+            <div class="form-actions">
+                <a href="{% url 'rolemanagement' %}" class="cancel-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> Update Staff
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

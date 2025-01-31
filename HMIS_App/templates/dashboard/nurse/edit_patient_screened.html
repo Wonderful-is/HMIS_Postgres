@@ -1,0 +1,64 @@
+{% extends 'dashboard/nurse/base_nurse.html' %}
+{% load static %}
+
+{% block title %}Edit Patient Screening - Limbe Regional Hospital{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_staff.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2><i class="fas fa-edit"></i> Edit Patient Screening</h2>
+</div>
+
+<div class="content-body">
+    
+        <form method="POST"  >
+        {% csrf_token %}
+ 
+
+            <div class="form-group">
+                <label for="height">Height (cm):</label>
+                <input type="text" id="height" name="height" value="{{ screening.height }}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="weight">Weight (kg):</label>
+                <input type="text" id="weight" name="weight" value="{{ screening.weight }}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="temperature">Temperature (cm):</label>
+                <input type="text" id="temperature" name="temperature" value="{{ screening.temperature }}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="blood_pressure">Blood Pressure:</label>
+                <input type="text" id="blood_pressure" name="blood_pressure" value="{{ screening.blood_pressure }}" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="symptoms">Symptoms:</label>
+                <input type="text" id="symptoms" name="symptoms" value="{{ screening.symptoms }}" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="complaints">Complaints:</label>
+                <input type="text" id="complaints" name="complaints" value="{{ screening.complaints }}" class="form-control" required>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <!-- Save Changes Button -->
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+                
+                <!-- Back to Screening Management Button -->
+                <a href="{% url 'patientscreeningmanagement' %}" class="btn-back">
+                    <i class="fas fa-arrow-left"></i> Back to Screening Management
+                </a>
+            </div>
+
+
+
+    </form>
+</div>
+{% endblock %}

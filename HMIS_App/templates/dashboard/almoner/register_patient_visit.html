@@ -1,0 +1,90 @@
+{% extends 'dashboard/almoner/base_almoner.html' %}
+{% load static %}
+
+{% block title %}Register Patient Visit - Limbe Regional Hospital{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/register_staff.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2><i class="fas fa-user-plus"></i> Register Patient Visit</h2>
+</div>
+
+<div class="content-body">
+    <div class="form-wrapper">
+        {% if message %}
+            <div class="message {{ message_class }}">
+                {{ message }}
+            </div>
+        {% endif %}
+
+        <!-- Patient Search Form -->
+        <form method="GET" action="{% url 'search_patient' %}" class="search-form">
+            {% csrf_token %}
+            <h4>Search Patient</h4>
+            <div class="form-group">
+                <label for="search_patient">Search by Patient ID or Name:</label>
+                <input type="text" id="search_patient" name="search_patient" class="form-control" required>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="submit-btn">Search</button>
+            </div>
+        </form>
+
+        {% if patient_data %}
+            <!-- Patient Found, Display Information -->
+            <div class="patient-info">
+                <h4>Patient Information</h4>
+                <p><strong>ID:</strong> {{ patient_data.patient_id }}</p>
+                <p><strong>Name:</strong> {{ patient_data.full_name }}</p>
+                <a href="{% url 'register_patient_visit' patient_id=patient_data.patient_id %}" class="btn btn-primary">Register Visit</a>
+                
+
+            </div>
+        {% else %}
+            {% if search_patient %}
+                <div class="search-results">
+                    <p>No patient found with the given search term: <strong>{{ search_patient }}</strong></p>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        {% if patient %}
+        <!-- Register Visit Form -->
+
+            <form method="POST" action="{% url 'register_patient_visit' patient.patient_id %}" class="registration-form">
+            {% csrf_token %}
+
+            <!-- Patient Information Section -->
+            <h4>Patient Information</h4>
+            <input type="hidden" name="patient_id" value="{{ patient.patient_id }}">
+            <div class="form-group">
+                <label for="patient_name">Patient Name:</label>
+                <input type="text" id="patient_name" name="patient_name" class="form-control" value="{{ patient.full_name }}" disabled>
+            </div>
+            
+            <div class="form-group">
+                <label for="reason_for_visit">Reason For Visit:</label>
+                <input type="text" id="reason_for_visit" name="reason_for_visit" class="form-control" required>
+            </div> 
+
+            <!-- <div class="form-group">
+                <label for="visit_date">Visit Date:</label>
+                <input type="date" id="visit_date" name="visit_date" class="form-control" required >
+            </div> -->
+
+            <div class="form-actions">
+                <a href="{% url 'visitmanagement' %}" class="cancel-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> Register Visit
+                </button>
+            </div>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

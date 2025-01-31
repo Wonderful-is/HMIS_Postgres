@@ -30,12 +30,12 @@
                 <h3>Personal Information</h3>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" required>
+                        <label for="full_name">Full Name</label>
+                        <input type="text" id="full_name" name="full_name" required>
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" required>
+                        <label for="phone_number">Phone Number</label>
+                        <input type="tel" id="phone_number" name="phone_number" required>
                     </div>
                 </div>
 
@@ -45,11 +45,11 @@
                         <input type="email" id="email" name="email" required>
                     </div>
                     <div class="form-group">
-                        <label for="role">Role</label>
-                        <select id="role" name="role" required>
+                        <label for="roles">Role</label>
+                        <select id="roles" name="role" required>
                             <option value="">Select Role</option>
                             {% for role in roles %}
-                                <option value="{{ role.rolename }}">{{ role.rolename }}</option>
+                                <option value="{{ role.role_name }}">{{ role.role_name }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -78,7 +78,7 @@
             <div class="form-actions">
                 <a href="{% url 'staffmanagement' %}" class="cancel-btn">
                     <i class="fas fa-times"></i> Cancel
-                </a>                
+                </a>
                 <button type="submit" class="submit-btn">
                     <i class="fas fa-save"></i> Register Staff
                 </button>

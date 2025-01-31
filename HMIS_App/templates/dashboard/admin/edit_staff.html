@@ -31,12 +31,12 @@
                 <h3>Personal Information</h3>
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="name">Full Name</label>
-                        <input type="text" id="name" name="name" value="{{ staff.name }}" required>
+                        <label for="full_name">Full Name</label>
+                        <input type="text" id="full_name" name="full_name" value="{{ staff.full_name }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" name="phone" value="{{ staff.phonenumber }}" required>
+                        <label for="phone_number">Phone Number</label>
+                        <input type="tel" id="phone_number" name="phone_number" value="{{ staff.phone_number }}" required>
                     </div>
                 </div>
 
@@ -46,12 +46,12 @@
                         <input type="email" id="email" name="email" value="{{ staff.email }}" required>
                     </div>
                     <div class="form-group">
-                        <label for="role">Role</label>
-                        <select id="role" name="role" required>
+                        <label for="roles">Role</label>
+                        <select id="roles" name="role" required>
                             <option value="">Select Role</option>
                             {% for role in roles %}
-                                <option value="{{ role.rolename }}" {% if role.rolename == staff.rolename %}selected{% endif %}>
-                                    {{ role.rolename }}
+                                <option value="{{ role.role_name }}" {% if role.rolename == staff.rolename %}selected{% endif %}>
+                                    {{ role.role_name }}
                                 </option>
                             {% endfor %}
                         </select>

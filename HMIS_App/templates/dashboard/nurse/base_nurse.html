@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Admin Dashboard - Limbe Regional Hospital{% endblock %}</title>
+    <title>{% block title %}Almoner Dashboard - Limbe Regional Hospital{% endblock %}</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="{% static 'css/base_admin_style.css' %}">
     {% block extra_css %}{% endblock %}
@@ -40,29 +40,24 @@
         <ul class="sidebar-menu">
             {% block sidebar %}
             <li class="sidebar-item">
-                <a href="{% url 'staffmanagement' %}" class="active">
+                <a href="{% url 'patientscrenningmanagement' %}" class="active">
                     <i class="fas fa-users"></i>
-                    <span>Staff Management</span>
+                    <span> Patients screnning Management</span>
                 </a>
             </li>
-            <li class="sidebar-item">
-                <a href="{% url 'rolemanagement' %}">
+            <!-- <li class="sidebar-item">
+                <a href="#">
                     <i class="fas fa-user-tag"></i>
-                    <span>Role Management</span>
+                    <span>Visit Management</span>
                 </a>
             </li>
-<!-- 
-                <a href="{% url 'rolemanagement' % }">Role Management
-                    <i class="fas fa-user-tag"></i>
-                    <span>Role Management</span>
-                </a> -->
-            
+
             <li class="sidebar-item">
-                <a href="{% url 'departmentmanagement' %}">
+                <a href="#">
                     <i class="fas fa-building"></i>
-                    <span>Department Management</span>
+                    <span>Appointment Management</span>
                 </a>
-            </li> 
+            </li>  -->
             {% endblock %}
         </ul>
     </div>
@@ -97,6 +92,9 @@
                 });
             });
         });
+
+
+        
     </script>
     {% endblock %}
 </body>

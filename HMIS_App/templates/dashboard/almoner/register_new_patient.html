@@ -1,0 +1,109 @@
+{% extends 'dashboard/almoner/base_almoner.html' %}
+{% load static %}
+
+{% block title %}Register New Patient - Limbe Regional Hospital{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/register_staff.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2><i class="fas fa-user-plus"></i> Register New Patient</h2>
+</div>
+
+<div class="content-body">
+    <div class="form-wrapper">
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Patient Registration Form -->
+        <form method="POST" action="{% url 'register_new_patient' %}" class="registration-form">
+            {% csrf_token %}
+
+            <!-- Patient Information Section -->
+            <h4>Patient Information</h4>
+            <div class="form-group">
+                <label for="full_name">Full Name:</label>
+                <input type="text" id="full_name" name="full_name" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="date_of_birth">Date of Birth:</label>
+                <input type="date" id="date_of_birth" name="date_of_birth" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age:</label>
+                <input type="number" id="age" name="age" class="form-control" min="0" required>
+            </div>
+
+            <div class="form-group">
+                <label for="gender">Gender:</label>
+                <select id="gender" name="gender" class="form-control">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" id="address" name="address" class="form-control" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone_number">Phone Number:</label>
+                <input type="text" id="phone_number" name="phone_number" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" class="form-control">
+            </div>
+
+            <!-- Dependent Information Section -->
+            <h4>Dependent Information</h4>
+            <div class="form-group">
+                <label for="dependent_name">Dependent Name:</label>
+                <input type="text" id="dependent_name" name="dependent_name" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label for="dependent_contact">Dependent Contact:</label>
+                <input type="text" id="dependent_contact" name="dependent_contact" class="form-control">
+            </div>
+
+            <!-- Insurance Information Section -->
+            <h4>Insurance Information</h4>
+            <div class="form-group">
+                <label for="insurance">Insurance:</label>
+                <input type="text" id="insurance" name="insurance" class="form-control">
+            </div>
+
+            <!-- Reason for Visit Section -->
+            <h4>Reason for Visit</h4>
+            <div class="form-group">
+                <label for="reason_for_visit">Reason for Visit:</label>
+                <textarea id="reason_for_visit" name="reason_for_visit" class="form-control" rows="4" placeholder="Describe the patient's reason for visiting..." required></textarea>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="{% url 'patientmanagement' %}" class="cancel-btn">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-save"></i> Register Patient
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

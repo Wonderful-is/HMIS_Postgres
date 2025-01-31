@@ -1,0 +1,114 @@
+{% extends 'dashboard/admin/base_admin.html' %}
+{% load static %}
+
+{% block title %}Role Management - Limbe Regional Hospital{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/role_management_style.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2><i class="fas fa-user-tag"></i> Role Management</h2>
+</div>
+
+<div class="content-body">
+    {% if roles %}
+    <div class="table-wrapper">
+        <div class="action-bar">
+            <div class="search-wrapper">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search roles...">
+                </div>
+            </div>
+            <a href="{% url 'register_role' %}" class="register-btn">
+                <i class="fas fa-plus"></i>
+                Register New Role
+            </a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Role ID</th>
+                    <th>Role Name</th>
+                    <th>Role Description</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for role in roles %}
+                <tr data-roleid="{{ role.roleid }}">
+                    <td>{{ role.roleid }}</td>
+                    <td>{{ role.rolename }}</td>
+                    <td>{{ role.roledescription }}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <a href="{% url 'edit_role' role.roleid %}" class="edit-btn" title="Edit">
+                                <i class="fas fa-pen"></i>
+                            </a>
+
+                            
+                            <button class="delete-btn" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No Roles Found</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+        <p>No Roles Found.</p>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const tableRows = document.querySelectorAll('tbody tr');
+
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+
+        tableRows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            row.style.display = text.includes(searchTerm) ? '' : 'none';
+        });
+    });
+
+    const deleteButtons = document.querySelectorAll('.delete-btn');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const roleId = row.dataset.roleid;
+
+            if (confirm('Are you sure you want to delete this role?')) {
+                fetch(`/delete_role/${roleId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        row.remove();
+                    } else {
+                        alert('Failed to delete the role.');
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 
+
