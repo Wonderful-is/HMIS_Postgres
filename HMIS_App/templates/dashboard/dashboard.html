@@ -6,10 +6,222 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Limbe Regional Hospital</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="{% static 'css/dashboard_style.css' %}">
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #004494;
+            --white: #ffffff;
+            --light-bg: #f8f9fa;
+            --border-color: #ddd;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-nav {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--white);
+            padding: 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1rem;
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .hospital-name {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.1);
+            border-radius: 25px;
+        }
+
+        .logout-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: none;
+            border: 1px solid var(--white);
+            border-radius: 5px;
+            color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: var(--white);
+            color: var(--primary-color);
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 2rem 1rem;
+            max-width: 1280px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 1.875rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .sections {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr); /* Changed to exactly 3 columns */
+            gap: 1.5rem;
+            padding: 0.75rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 1.75rem; /* Increased padding */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            text-decoration: none !important;
+            min-height: 220px; /* Added fixed minimum height */
+        }
+
+        .section:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .section i {
+            font-size: 2rem;
+            color: var(--secondary-color);
+            background: var(--light-bg);
+            padding: 0.75rem;
+            border-radius: 10px;
+        }
+
+        .section h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #000000;
+            margin: 0;
+            text-decoration: none;
+        }
+
+        .section p {
+            color: #666;
+            text-align: center;
+            line-height: 1.4;
+            font-size: 0.85rem;
+            margin: 0;
+            text-decoration: none !important;
+        }
+
+        a.section {
+            text-decoration: none !important;
+        }
+
+        a.section:hover {
+            text-decoration: none !important;
+        }
+
+        .footer {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1.5rem;
+            text-align: center;
+            margin-top: auto;
+        }
+
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-right {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .user-info {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .logout-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .sections {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .hospital-name {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Top Navigation Bar -->
     <nav class="top-nav">
         <div class="nav-container">
             <div class="nav-left">
@@ -19,75 +231,57 @@
             <div class="nav-right">
                 <div class="user-info">
                     <i class="fas fa-user-circle"></i>
-                    <span>Welcome, {{ user_id }}</span>
+                    <span>Welcome, {{ username }}</span>
                 </div>
                 <a href="{% url 'logout' %}" class="logout-btn">
                     <i class="fas fa-sign-out-alt"></i>
-                    Logout
+                    <span>Logout</span>
                 </a>
             </div>
         </div>
     </nav>
 
-    <!-- Main Content Area -->
     <main class="main-content">
-        <div class="container">
-            <h2 class="section-title">Select Your Role</h2>
-            <div class="sections">
-                <a href="{% url 'base_admin' %}" style="text-decoration: none;">
-                    <div class="section">
-                        <i class="fas fa-user-cog"></i>
-                        <h3>Admin</h3>
-                        <p>System administration and user management.</p>
-                    </div>
-                </a>
-
-                <!-- Almoner Section -->
-                <a href="{% url 'base_almoner' %}" style="text-decoration: none;">
-                    <div class="section">
-                        <i class="fas fa-laptop-medical"></i>
-                        <h3>Almoner</h3>
-                        <p>Manage patient registrations, payments, and financial records efficiently.</p>
-                    </div>
-                </a>
-                <a href="{% url 'base_nurse' %}" style="text-decoration: none;">
-                <div class="section">
-                    <i class="fas fa-user-nurse"></i>
-                    <h3>Nurse</h3>
-                    <p>Access patient records, manage treatments, and monitor vital signs.</p>
-                </div>
+        <h2 class="section-title">Select Your Role</h2>
+        <div class="sections">
+            <a href="{% url 'base_admin' %}" class="section">
+                <i class="fas fa-user-cog"></i>
+                <h3>Admin</h3>
+                <p>System administration and user management</p>
             </a>
 
-            <a href="{% url 'base_doctor' %}" style="text-decoration: none;">
-                <div class="section">
-                    <i class="fas fa-user-md"></i>
-                    <h3>Doctor</h3>
-                    <p>Review patient histories, make diagnoses, and prescribe treatments.</p>
-                </div>
+            <a href="{% url 'base_almoner' %}" class="section">
+                <i class="fas fa-laptop-medical"></i>
+                <h3>Almoner</h3>
+                <p>Manage patient registrations, payments, and financial records efficiently</p>
             </a>
 
-                <div class="section">
-                    <i class="fas fa-vials"></i>
-                    <h3>Lab Technician</h3>
-                    <p>Process lab tests, manage results, and maintain lab records.</p>
-                </div>
+            <a href="{% url 'base_nurse' %}" class="section">
+                <i class="fas fa-user-nurse"></i>
+                <h3>Nurse</h3>
+                <p>Access patient records, manage treatments, and monitor vital signs</p>
+            </a>
 
-                <div class="section">
-                    <i class="fas fa-notes-medical"></i>
-                    <h3>Major</h3>
-                    <p>Oversee hospital operations and coordinate departments.</p>
-                </div>
+            <a href="{% url 'base_doctor' %}" class="section">
+                <i class="fas fa-user-md"></i>
+                <h3>Doctor</h3>
+                <p>Review patient histories, make diagnoses, and prescribe treatments</p>
+            </a>
 
-                <div class="section">
-                    <i class="fas fa-file-alt"></i>
-                    <h3>HMIS Office</h3>
-                    <p>Manage hospital data, generate reports, and analyze statistics.</p>
-                </div>
+            <div class="section">
+                <i class="fas fa-vials"></i>
+                <h3>Lab Technician</h3>
+                <p>Process lab tests, manage results, and maintain lab records</p>
+            </div>
+
+            <div class="section">
+                <i class="fas fa-file-alt"></i>
+                <h3>HMIS Office</h3>
+                <p>Manage hospital data, generate reports, and analyze statistics</p>
             </div>
         </div>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
         <p>&copy; {% now "Y" %} Limbe Regional Hospital - Data Management System. All Rights Reserved.</p>
     </footer>

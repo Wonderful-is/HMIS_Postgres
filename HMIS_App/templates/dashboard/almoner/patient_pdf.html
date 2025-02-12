@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Details</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container { 
+            max-width: 800px; 
+            margin: auto; 
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h2 { 
+            text-align: center; 
+            color: #333;
+        }
+        p { 
+            font-size: 16px; 
+            color: #555;
+            margin: 8px 0;
+        }
+        p strong { 
+            color: #333; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Patient Details</h2>
+        
+        {% if patient.patient_id %}
+            <p><strong>Patient ID:</strong> {{ patient.patient_id }}</p>
+        {% endif %}
+        
+        {% if patient.full_name %}
+            <p><strong>Full Name:</strong> {{ patient.full_name }}</p>
+        {% endif %}
+        
+        {% if patient.date_of_birth %}
+            <p><strong>Date of Birth:</strong> {{ patient.date_of_birth }}</p>
+        {% endif %}
+        
+        {% if patient.age %}
+            <p><strong>Age:</strong> {{ patient.age }}</p>
+        {% endif %}
+        
+        {% if patient.gender %}
+            <p><strong>Gender:</strong> {{ patient.gender }}</p>
+        {% endif %}
+        
+        {% if patient.address %}
+            <p><strong>Address:</strong> {{ patient.address }}</p>
+        {% endif %}
+        
+        {% if patient.phone_number %}
+            <p><strong>Phone Number:</strong> {{ patient.phone_number }}</p>
+        {% endif %}
+        
+        {% if patient.email %}
+            <p><strong>Email:</strong> {{ patient.email }}</p>
+        {% endif %}
+        
+        {% if patient.dependent_name %}
+            <p><strong>Dependent Name:</strong> {{ patient.dependent_name }}</p>
+        {% endif %}
+        
+        {% if patient.insurance %}
+            <p><strong>Insurance:</strong> {{ patient.insurance }}</p>
+        {% endif %}
+    </div>
+</body>
+</html>

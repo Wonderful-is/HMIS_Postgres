@@ -1,6 +1,3 @@
-
-
-
 <!-- dashboard/almoner/view_patient.html -->
 {% extends 'dashboard/almoner/base_almoner.html' %}
 {% load static %}
@@ -74,13 +71,30 @@
             background-color: #0056b3;
         }
 
+        /* Download PDF Button */
+        .btn-download {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn-download:hover {
+            background-color: #218838;
+        }
+
         /* Responsive design for smaller screens */
         @media (max-width: 768px) {
             .patient-details {
                 grid-template-columns: 1fr;
             }
 
-            .btn-primary {
+            .btn-primary, .btn-download {
                 width: 100%;
                 text-align: center;
             }
@@ -115,5 +129,12 @@
     </div>
 
     <a href="{% url 'patientmanagement' %}" class="btn-primary">Back to List</a>
+    <a href="{% url 'download_patient_pdf' patient.patient_id %}" class="btn-download">Download PDF</a>
+
+    <a href="{% url 'download_patient_excel' %}" class="btn btn-primary">
+        Download Excel
+    </a>
+    
+
 </div>
 {% endblock %}

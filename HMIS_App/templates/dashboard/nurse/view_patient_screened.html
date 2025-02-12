@@ -101,5 +101,11 @@
     </div>
 
     <a href="{% url 'patientscreeningmanagement' %}" class="btn-primary">Back to screeening</a>
+    <!-- {% if patient.id %}
+    <a href="{% url 'download_patient_pdf' patient.id %}">Download PDF</a>
+{% else %}
+    <p>No patient ID available</p>
+{% endif %} -->
+
 </div>
 {% endblock %}

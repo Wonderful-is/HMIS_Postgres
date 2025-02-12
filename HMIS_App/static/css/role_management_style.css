@@ -108,6 +108,63 @@ body {
 }
 
 
+.action-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.register-btn, .download-excel-btn {
+    margin-left: 15px;
+}
+
+.action-buttons a {
+    margin-left: 10px;
+}
+
+
+
+.register-btn, .download-excel-btn, .view-btn, .download-btn {
+    padding: 10px 20px;
+    margin-right: 10px;
+    border-radius: 5px;
+    color: white;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    font-weight: bold;
+}
+
+.register-btn {
+    background-color: #28a745; /* Green */
+}
+
+.download-excel-btn {
+    background-color: #dc3545; /* Red */
+}
+
+.view-btn {
+    background-color: #007bff; /* Blue */
+}
+
+.download-btn {
+    background-color: #f39c12; /* Orange */
+}
+
+.register-btn:hover,
+.download-excel-btn:hover,
+.view-btn:hover,
+.download-btn:hover {
+    opacity: 0.8;
+}
+
+/* ###############################  up for download ###################################### */
+
+
+
+
+
 /* Table Styles */
 .table-wrapper {
     background: #ffffff;

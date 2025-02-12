@@ -5,6 +5,52 @@
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/role_management_style.css' %}">
+    <style>
+        /* Styling for the buttons */
+        .register-btn, .download-excel-btn {
+            background-color: #007bff; /* Blue color */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            margin: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .register-btn:hover, .download-excel-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .download-excel-btn {
+            background-color: #28a745; /* Green color for Excel */
+        }
+
+        .download-excel-btn:hover {
+            background-color: #218838; /* Darker green */
+        }
+
+        .download-btn {
+            background-color: red; /* Red color for Download button */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background-color: darkred;
+        }
+
+        /* For buttons with icons */
+        .register-btn i, .download-btn i, .download-excel-btn i {
+            margin-right: 8px;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -23,10 +69,18 @@
                 </div>
             </div>
 
+            <!-- Register Button -->
             <a href="{% url 'register_new_patient' %}" class="register-btn">
                 <i class="fas fa-plus"></i>
                 Register New Patient
             </a>
+
+            <!-- Download Excel Button -->
+            <a href="{% url 'download_patient_excel' %}" class="download-excel-btn">
+                <i class="fas fa-download"></i>
+                Download Excel
+            </a>
+
         </div>
 
         <table>
@@ -68,9 +122,14 @@
                                 <i class="fas fa-pen"></i>
                             </a>
 
-
+                            <!-- View Button -->
                             <a href="{% url 'view_patient' patient.patient_id %}" class="view-btn" title="View">
                                 <i class="fas fa-eye"></i>
+                            </a>
+
+                            <!-- New Download Button -->
+                            <a href="{% url 'download_patient_pdf' patient.patient_id %}" class="download-btn" title="Download PDF">
+                                <i class="fas fa-file-pdf"></i>
                             </a>
                         </div>
                     </td>

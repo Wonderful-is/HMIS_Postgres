@@ -1,6 +1,8 @@
 from django.urls import path
 from . import views
 
+from .views import download_patient_pdf
+
 urlpatterns = [
     # Core URLs
     path('', views.home, name='home'),
@@ -46,6 +48,11 @@ urlpatterns = [
     #---------------------------------------------------------------------------------------------------------
 
      # Admin URLs
+
+    path('download_patient_excel/', views.download_patient_excel, name='download_patient_excel'),
+    path('download_patient_pdf/<int:patient_id>/', views.download_patient_pdf, name='download_patient_pdf'),
+  
+   
     path('base_almoner/', views.base_almoner, name='base_almoner'),
 
     path('patientmanagement/', views.patient_list, name='patientmanagement'),
@@ -54,8 +61,15 @@ urlpatterns = [
     path('view-patient/<int:patient_id>/', views.view_patient, name='view_patient'),
     path('edit-patient/<int:patient_id>/', views.edit_patient, name='edit_patient'),
 
-    
+     # Other URL patterns...
+    path('download-patient/<int:patient_id>/', views.download_patient_pdf, name='download_patient_pdf'),
 
+
+#download view
+    path('download-pdf/<int:patient_id>/', download_patient_pdf, name='download_patient_pdf'),
+
+    path('download-patient-excel/', views.download_patient_excel, name='download_patient_excel'),
+ 
 
     #___________________________________________________________________________________________________________
     path('visitmanagement/', views.visit_list, name='visitmanagement'),
@@ -66,6 +80,8 @@ urlpatterns = [
     path('register_patient_visit/<int:patient_id>/', views.register_patient_visit, name='register_patient_visit'),
 
     path('edit-visit/<int:visit_id>/', views.edit_visit, name='edit_visit'),
+
+
 
 
 #__________{% url 'register_patient_visit' %}______________________________________________________________________________________

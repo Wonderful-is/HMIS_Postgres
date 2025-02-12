@@ -78,7 +78,7 @@ def staff_list(request):
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT s.staff_id, s.full_name, s.email, s.username,
-                   s.password, s.address, r.role_id, s.phone_number
+                   s.password, s.address, r.role_name, s.phone_number
             FROM staff s
             JOIN roles r ON s.role_id = r.role_id
             ORDER BY s.staff_id 
@@ -93,7 +93,7 @@ def staff_list(request):
                 'username': user[3],
                 'password': user[4],
                 'address': user[5],
-                'role_id': user[6],
+                'role_name': user[6],
                 'phone_number': user[7],
                 #'phone_number': user[5]
             })
@@ -621,7 +621,6 @@ def base_almoner(request):
 
 
 
-
 def patient_list(request):
     if 'user_id' not in request.session:
         return redirect('login')
@@ -637,11 +636,12 @@ def patient_list(request):
     with connection.cursor() as cursor:
         cursor.execute("""
             SELECT p.patient_id, p.full_name, p.date_of_birth, p.age,
-                   p.gender, p.address, p.phone_number, p.email, 
-                   p.dependent_name, p.dependent_contact, p.relationship_with_dependent,
-                  p.insurance, p.registered_by
+                p.gender, p.address, p.phone_number, p.email, 
+                p.dependent_name, p.dependent_contact, p.relationship_with_dependent,
+                p.insurance, s.full_name AS registered_by_name
             FROM patients p
-            ORDER BY p.patient_id 
+            LEFT JOIN staff s ON p.registered_by = s.staff_id
+            ORDER BY p.patient_id;
         """)
 
         patients = cursor.fetchall()
@@ -660,7 +660,7 @@ def patient_list(request):
                 'dependent_contact': patient[9],
                 'relationship_with_dependent': patient[10],
                 'insurance': patient[11],
-                'registered_by': patient[12],
+                'registered_by': patient[12],  # This now holds the staff's full name
             })
 
     context = {
@@ -670,7 +670,6 @@ def patient_list(request):
     }
     
     return render(request, 'dashboard/almoner/patientmanagement.html', context)
-
 
 
 
@@ -1201,76 +1200,6 @@ def register_patient_screened(request, patient_id=None):
 
 
 
-# def register_patient_screened(request, patient_id=None):
-#     # Check if the user is logged in
-#     if 'user_id' not in request.session:
-#         return redirect('login')
-
-#     # Get the logged-in user's details from the session
-#     username = request.session.get('username', 'Guest')
-#     user_id = request.session.get('user_id')
-
-#     # Initialize patient details
-#     patient = None
-
-#     # Fetch patient details if patient_id is provided
-#     if patient_id:
-#         with connection.cursor() as cursor:
-#             cursor.execute("""
-#                 SELECT patient_id, full_name
-#                 FROM patients
-#                 WHERE patient_id = %s
-#             """, [patient_id])
-#             result = cursor.fetchone()
-#             if result:
-#                 patient = {
-#                     'patient_id': result[0],
-#                     'full_name': result[1]
-#                 }
-#             else:
-#                 messages.error(request, "Patient not found.")
-#                 return redirect('search_patient_screened')
-
-#     # Handle form submission for registering the visit
-#     if request.method == 'POST':
-#         height = request.POST.get('height')
-#         weight = request.POST.get('weight')
-#         temperature = request.POST.get('temperature')
-#         blood_pressure = request.POST.get('blood_pressure')
-#         symptoms = request.POST.get('symptoms')
-#         complaints = request.POST.get('complaints')
-
-#         if patient and height and weight and temperature and blood_pressure and symptoms and complaints:
-#             try:
-#                 with connection.cursor() as cursor:
-#                     # Insert patient into the screening table
-#                     cursor.execute("""
-#                         INSERT INTO screening (patient_id, height,weight, blood_pressure, symptoms, complaints, registered_by)
-#                         VALUES (%s, %s, %s,%s, %s, %s, %s)
-#                     """, [patient['patient_id'], height, weight, blood_pressure, symptoms, complaints, user_id])
-
-#                 # Success message
-#                 messages.success(request, f"Patient  registered successfully in complaints table by {username}.")
-#                 return redirect('register_patient_screened', patient_id=patient['patient_id'])
-#             except Exception as e:
-#                 # Handle SQL errors
-#                 messages.error(request, f"An error occurred: {str(e)}")
-#         else:
-#             # Error message if fields are missing
-#             messages.error(request, "Please fill in all the fields.")
-
-#     # Pass data to the template
-#     context = {
-#         'username': username,
-#         'user_id': user_id,
-#         'patient': patient,
-#     }
-
-#     # Render the form template
-#     return render(request, 'dashboard/nurse/register_patient_screened.html', context)
-
-
-
 
 
 # View a Specific Patient
@@ -1320,73 +1249,6 @@ def view_patient_screened(request, patient_id):
     return render(request, 'dashboard/nurse/view_patient_screened.html', context)
 
 
-
-
-# def edit_patient_screened(request, screening_id):
-#     if 'user_id' not in request.session:
-#         return redirect('login')
-
-#     username = request.session.get('username')
-#     user_id = request.session.get('user_id')
-
-#     try:
-#         with connection.cursor() as cursor:
-#             if request.method == 'POST':
-#                 height = request.POST.get('height')
-#                 weight = request.POST.get('weight')
-#                 temperature = request.POST.get('temperature')
-#                 blood_pressure = request.POST.get('blood_pressure')
-#                 symptoms = request.POST.get('symptoms')
-#                 complaints = request.POST.get('complaints')
-
-#                 # Ensure the values are not None or empty before updating
-#                 if all([height, weight, temperature, blood_pressure, symptoms, complaints]):
-#                     cursor.execute("""
-#                         UPDATE screening
-#                         SET height = %s, weight = %s, temperature = %s, blood_pressure = %s, symptoms = %s, complaints = %s
-#                         WHERE screening_id = %s
-#                     """, [height, weight, temperature, blood_pressure, symptoms, complaints, patient_id])
-
-#                     # Commit the transaction
-#                     transaction.commit()
-
-#                     messages.success(request, 'Patient Screening updated successfully!')
-#                     return redirect('patientscreeningmanagement')
-#                 else:
-#                     messages.error(request, 'All fields are required.')
-
-#             # Fetch existing screening details for the patient
-#             cursor.execute("""
-#                 SELECT height, weight, temperature, blood_pressure, symptoms, complaints
-#                 FROM screening
-#                 WHERE patient_id = %s
-#             """, [patient_id])
-#             screening_data = cursor.fetchone()
-
-#             if not screening_data:
-#                 messages.error(request, 'Patient Screening not found.')
-#                 return redirect('patientscreeningmanagement')
-
-#             # Map the screening data to a dictionary
-#             screening = {
-#                 'height': screening_data[0],
-#                 'weight': screening_data[1],
-#                 'temperature': screening_data[2],
-#                 'blood_pressure': screening_data[3],
-#                 'symptoms': screening_data[4],
-#                 'complaints': screening_data[5],
-#             }
-
-#             context = {
-#                 'screening': screening,
-#                 'username': username,
-#                 'user_id': user_id,
-#             }
-#             return render(request, 'dashboard/nurse/edit_patient_screened.html', context)
-
-#     except Exception as e:
-#         messages.error(request, f"Error: {str(e)}")
-#     return redirect('patientscreeningmanagement')
 
 def edit_patient_screened(request, screening_id):
     if 'user_id' not in request.session:
@@ -1535,50 +1397,6 @@ def Consultation(request):
 
 
 
-
-
-# def search_patient_consulted(request):
-#     # Get the search term from the GET request
-#     search_term = request.GET.get('search_patient_consulted', '').strip()
-
-#     patient_data = None
-#     patients = None
-
-#     if search_term:
-#         # Check if the search term is a valid number (Patient ID) or a name
-#         try:
-#             search_patient_id = int(search_term)
-#             # Searching by Patient ID (raw SQL query)
-#             with connection.cursor() as cursor:
-#                 cursor.execute("""
-#                 SELECT * FROM patients WHERE patient_id = %s   
-#                 """, [search_patient_id])
-#                 patients = cursor.fetchall()
-#         except ValueError:
-#             # If it's not a number, search by name (raw SQL query)
-#             with connection.cursor() as cursor:
-#                 cursor.execute("""
-#                     SELECT * FROM patients WHERE full_name LIKE %s
-#                 """, [f"%{search_term}%"])
-#                 patients = cursor.fetchall()
-
-#         if patients:
-#             patient_data = {
-#                 'patient_id': patients[0][0],  # Adjust index based on actual table schema
-#                 'full_name': patients[0][1],   # Adjust index based on actual table schema
-#             }
-
-#             messages.success(request, "Patient found.")
-#         else:
-#             messages.error(request, "No patient found with that ID or name or patient has not meet almoner.")
-#     else:
-#         messages.error(request, "Please enter a search term.")
-
-#     # Pass the patient data to the template
-#     return render(request, 'dashboard/doctor/register_patient_consulted.html', {
-#         'patient_data': patient_data,
-#         'search_patient_consulted': search_term
-#     })
 def search_patient_consulted(request):
     # Get the search term from the GET request
     search_term = request.GET.get('search_patient_consulted', '').strip()
@@ -1832,134 +1650,6 @@ def register_patient_consulted(request, patient_id=None):
     return render(request, 'dashboard/doctor/register_patient_consulted.html', context)
 
 
-# def register_patient_consulted(request, patient_id=None):
-#     # Check if the user is logged in
-#     if 'user_id' not in request.session:
-#         return redirect('login')
-
-#     # Get the logged-in user's details from the session
-#     username = request.session.get('username', 'Guest')
-#     user_id = request.session.get('user_id')
-
-#     # Initialize patient details, screening data, and consultation data
-#     patient = None
-#     screenings = []
-#     consultation_data = None
-
-#     # Fetch patient details and screening data if patient_id is provided
-#     if patient_id:
-#         with connection.cursor() as cursor:
-#             # Fetch patient details
-#             cursor.execute("""
-#                 SELECT patient_id, full_name
-#                 FROM patients
-#                 WHERE patient_id = %s
-#             """, [patient_id])
-#             result = cursor.fetchone()
-#             if result:
-#                 patient = {
-#                     'patient_id': result[0],
-#                     'full_name': result[1]
-#                 }
-#             else:
-#                 messages.error(request, "Patient not found.")
-#                 return redirect('register_patient_consulted')
-
-#             # Fetch screening details for the patient
-#             cursor.execute("""
-#                 SELECT screening_date, height, weight, blood_pressure, temperature, symptoms, complaints
-#                 FROM screening
-#                 WHERE patient_id = %s
-#             """, [patient_id])
-#             screening_results = cursor.fetchall()
-
-#             # Format screening details into a dictionary (just one record, if any)
-#             if screening_results:
-#                 screenings = {
-#                     'screening_date': screening_results[0][0],
-#                     'height': screening_results[0][1],
-#                     'weight': screening_results[0][2],
-#                     'blood_pressure': screening_results[0][3],
-#                     'temperature': screening_results[0][4],
-#                     'symptoms': screening_results[0][5],
-#                     'complaints': screening_results[0][6],
-#                 }
-
-#             if not screenings:
-#                 messages.info(request, "No screening details found for this patient.")
-
-#             # Fetch existing consultation data (if available)
-#             cursor.execute("""
-#                 SELECT diagnosis, treatment, prescription
-#                 FROM consultation
-#                 WHERE patient_id = %s
-#                 ORDER BY created_at DESC LIMIT 1
-#             """, [patient_id])
-#             consultation_result = cursor.fetchone()
-
-#             if consultation_result:
-#                 consultation_data = {
-#                     'diagnosis': consultation_result[0] or 'No Diagnosis Available',
-#                     'treatment': consultation_result[1] or 'No Treatment Available',
-#                     'prescription': consultation_result[2] or 'No Prescription Available',
-#                 }
-
-#     # Handle form submission for registering the visit
-#     if request.method == 'POST':
-#         diagnosis = request.POST.get('diagnosis')
-#         treatment = request.POST.get('treatment')
-#         prescription = request.POST.get('prescription')
-
-#         if patient and diagnosis and treatment and prescription:
-#             try:
-#                 with connection.cursor() as cursor:
-#                     # Check if consultation already exists (to update or insert)
-#                     cursor.execute("""
-#                         SELECT id
-#                         FROM consultation
-#                         WHERE patient_id = %s
-#                     """, [patient['patient_id']])
-#                     existing_consultation = cursor.fetchone()
-
-#                     if existing_consultation:
-#                         # Update the existing consultation
-#                         cursor.execute("""
-#                             UPDATE consultation
-#                             SET diagnosis = %s, treatment = %s, prescription = %s, updated_at = NOW()
-#                             WHERE id = %s
-#                         """, [diagnosis, treatment, prescription, existing_consultation[0]])
-#                     else:
-#                         # Insert a new consultation
-#                         cursor.execute("""
-#                             INSERT INTO consultation (patient_id, diagnosis, treatment, prescription, registered_by, created_at)
-#                             VALUES (%s, %s, %s, %s, %s, NOW())
-#                         """, [patient['patient_id'], diagnosis, treatment, prescription, user_id])
-
-#                 # Success message
-#                 messages.success(request, f"Consultation for {patient['full_name']} has been saved successfully.")
-#                 return redirect('register_patient_consulted', patient_id=patient['patient_id'])
-#             except Exception as e:
-#                 # Handle SQL errors
-#                 messages.error(request, f"An error occurred: {str(e)}")
-#         else:
-#             # Error message if fields are missing
-#             messages.error(request, "Please fill in all the fields.")
-
-#     # Pass data to the template
-#     context = {
-#         'username': username,
-#         'user_id': user_id,
-#         'patient': patient,
-#         'screenings': screenings,  # Pass screening data to the template
-#         'consultation_data': consultation_data,  # Pass existing consultation data to the template
-#     }
-
-#     # Render the form template
-#     return render(request, 'dashboard/doctor/register_patient_consulted.html', context)
-
-
-
-
 
 
 
@@ -2058,76 +1748,6 @@ def view_patient_consultation(request, patient_id=None):
 
 
 
-
-
-
-# def register_patient_consulted(request, patient_id=None):
-#     # Check if the user is logged in
-#     if 'user_id' not in request.session:
-#         return redirect('login')
-
-#     # Get the logged-in user's details from the session
-#     username = request.session.get('username', 'Guest')
-#     user_id = request.session.get('user_id')
-
-#     # Initialize patient details
-#     patient = None
-
-#     # Fetch patient details if patient_id is provided
-#     if patient_id:
-#         with connection.cursor() as cursor:
-#             cursor.execute("""
-#                 SELECT patient_id, full_name
-#                 FROM patients
-#                 WHERE patient_id = %s
-#             """, [patient_id])
-#             result = cursor.fetchone()
-#             if result:
-#                 patient = {
-#                     'patient_id': result[0],
-#                     'full_name': result[1]
-#                 }
-#             else:
-#                 messages.error(request, "Patient not found.")
-#                 return redirect('register_patient_consulted')
-
-#     # Handle form submission for registering the visit
-#     if request.method == 'POST':
-#         diagnosis = request.POST.get('diagnosis')
-#         treatment = request.POST.get('treatment')
-#         prescription = request.POST.get('prescription')
-       
-
-#         if patient and diagnosis and treatment and prescription :
-#             try:
-#                 with connection.cursor() as cursor:
-#                     # Insert patient into the screening table
-#                     cursor.execute("""
-#                         INSERT INTO consultation (patient_id, diagnosis,treatment, prescription, registered_by)
-#                         VALUES (%s, %s, %s,%s, %s)
-#                     """, [patient['patient_id'], diagnosis,treatment, prescription, user_id])
-
-#                 # Success message
-#                 messages.success(request, f"Patient  registered successfully in consultation table by {username}.")
-#                 return redirect('register_patient_consulted', patient_id=patient['patient_id'])
-#             except Exception as e:
-#                 # Handle SQL errors
-#                 messages.error(request, f"An error occurred: {str(e)}")
-#         else:
-#             # Error message if fields are missing
-#             messages.error(request, "Please fill in all the fields.")
-
-#     # Pass data to the template
-#     context = {
-#         'username': username,
-#         'user_id': user_id,
-#         'patient': patient,
-#     }
-
-#     # Render the form template
-#     return render(request, 'dashboard/doctor/register_patient_consulted.html', context)
-
-         
 
 
 def edit_patient_consulted(request, id):
@@ -2267,89 +1887,6 @@ def new_patient_list(request):
     # Pass username to the template for pre-filling the 'registered_by' field
     context = {'username': username, 'user_id': user_id}
     return render(request, 'dashboard/almoner/register_new_patient.html', context)
-
-
-
-# def new_patient_list(request):
-#     if 'user_id' not in request.session:
-#         return redirect('login')
-    
-#     username = request.session.get('username')  # Default to 'Guest' if not logged in
-#     user_id = request.session.get('user_id') 
-    
-#     if request.method == 'POST':
-#         try:
-#             # Capture form data
-#             full_name = request.POST.get('full_name')
-#             date_of_birth = request.POST.get('date_of_birth')
-#             age = int(request.POST.get('age', 0))  # Convert to integer
-#             gender = request.POST.get('gender')
-#             address = request.POST.get('address')
-#             phone_number = request.POST.get('phone_number', '')
-#             email = request.POST.get('email', '')
-#             dependent_name = request.POST.get('dependent_name')
-#             dependent_contact = request.POST.get('dependent_contact')
-#             insurance = request.POST.get('insurance')
-#             reason_for_visit = request.POST.get('reason_for_visit')
-
-#         #    1- # put the one for reason of visit
-
-#             # Capture the almoner who is registering the patient
-
-#             registered_by = request.session.get('user_id')
-
-#             with connection.cursor() as cursor:
-#                 # Insert new patient
-#                 cursor.execute("""
-#                     INSERT INTO patients 
-#                     (full_name, date_of_birth, age, gender, address, phone_number, email, dependent_name, dependent_contact, insurance, registered_by) 
-#                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-#                 """, [full_name, date_of_birth, age, gender, address, phone_number, email, dependent_name, dependent_contact, insurance, registered_by])
-                
-#                 connection.commit()
-#                 messages.success(request, 'New Patient registered successfully!')
-#                 return redirect('register_new_patient')
-
-#         except Exception as e:
-#             connection.rollback()
-#             messages.error(request, f'Error registering new patient: {str(e)}')
-#             return redirect('register_new_patient')
-
-
-
-
-#     # 2 -#select the patient id with this patient name(current patient)
-
-#  # Get the newly inserted patient's ID
-#                 cursor.execute("SELECT LAST_INSERT_ID()")
-#                 patient_id = cursor.fetchone()[0]
-
-    
-# # 3 take the current time using python datetime
-
-# # Get the current timestamp
-#                 current_time = datetime.now()
-# #    4- #you use that patient id to insert reason of visit in visit table
-#                 cursor.execute("""
-#                     INSERT INTO visit (patient_id, reason_for_visit, visit_date) 
-#                     VALUES (%s, %s, %s)
-#                 """, [patient_id, reason_for_visit, current_time])
-
-#                 connection.commit()
-#                 messages.success(request, 'New Patient registered successfully!')
-#                 return redirect('register_new_patient')
-                
-#                 except Exception as e:
-#                     connection.rollback()
-#                     messages.error(request, f'Error registering new patient: {str(e)}')
-#                     return redirect('register_new_patient')
-
-
-#     # Pass username to the template for pre-filling the 'registered_by' field
-     
-#     context = {'username': username, 'user_id':user_id}
-    
-#     return render(request, 'dashboard/almoner/register_new_patient.html', context)
 
 
 
@@ -2637,65 +2174,6 @@ def register_patient_appointment(request, patient_id=None):
 #########################   edit patient            #########################################
 
 
-# def edit_patient(request, patient_id):
-#     if 'user_id' not in request.session:
-#         return redirect('login')
-
-#     username = request.session.get('username')
-#     user_id = request.session.get('user_id')
-
-#     try:
-#         # Fetch patient data to prefill the form
-#         with connection.cursor() as cursor:
-#             cursor.execute("SELECT * FROM patients WHERE patient_id = %s", [patient_id])
-#             patient = cursor.fetchone()
-
-#         if not patient:
-#             messages.error(request, "Patient not found.")
-#             return redirect('patient_list')  # Redirect to your patient list page
-
-#     except Exception as e:
-#         messages.error(request, f"Error fetching patient details: {str(e)}")
-#         return redirect('patient_list')
-
-#     if request.method == 'POST':
-#         try:
-#             # Capture updated form data
-#             full_name = request.POST.get('full_name')
-#             date_of_birth = request.POST.get('date_of_birth')
-#             age = int(request.POST.get('age', 0))
-#             gender = request.POST.get('gender')
-#             address = request.POST.get('address')
-#             phone_number = request.POST.get('phone_number', '')
-#             email = request.POST.get('email', '')
-#             dependent_name = request.POST.get('dependent_name')
-#             dependent_contact = request.POST.get('dependent_contact')
-#             insurance = request.POST.get('insurance')
-
-#             with connection.cursor() as cursor:
-#                 # Update patient information
-#                 cursor.execute("""
-#                     UPDATE patients 
-#                     SET full_name = %s, date_of_birth = %s, age = %s, gender = %s, address = %s, 
-#                         phone_number = %s, email = %s, dependent_name = %s, dependent_contact = %s, insurance = %s
-#                     WHERE patient_id = %s
-#                 """, [full_name, date_of_birth, age, gender, address, phone_number, email, dependent_name, dependent_contact, insurance, patient_id])
-                
-#                 connection.commit()
-#                 messages.success(request, 'Patient details updated successfully!')
-#                 return redirect('patient_list')  # Redirect to patient list after successful update
-
-#         except Exception as e:
-#             connection.rollback()
-#             messages.error(request, f"Error updating patient details: {str(e)}")
-
-#     context = {
-#         'patient': patient,
-#         'username': username,
-#         'user_id': user_id,
-#     }
-
-#     return render(request, 'dashboard/almoner/edit_patient.html', context)
 
 # ======================
 
@@ -2934,3 +2412,414 @@ def search_authorized_patients(request):
             return JsonResponse(results, safe=False)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+
+
+
+
+    ######################################################################################
+
+                             #PDF
+
+
+    #################################################################################################
+
+
+
+from io import BytesIO
+from django.http import HttpResponse
+from django.db import connection
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+
+def fetch_patient_data(patient_id):
+    """Fetch patient data using raw SQL."""
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute(
+                "SELECT patient_id, full_name, age, gender, dependent_name, insurance FROM patients WHERE patient_id = %s", 
+                [patient_id]
+            )
+            patient = cursor.fetchone()  # Returns a tuple (patient_id, name, age, gender)
+
+        if not patient:
+            return None
+
+        return patient
+
+    except Exception as e:
+        print(f"DEBUG: Database error: {e}")
+        return None
+
+def download_patient_pdf(request, patient_id):
+    """Generate a PDF with improved styling for patient details."""
+    
+    try:
+        patient_id = int(patient_id)  # Ensure patient_id is an integer
+    except ValueError:
+        return HttpResponse("Invalid Patient ID. It must be a number.", status=400)
+
+    patient = fetch_patient_data(patient_id)
+    
+    if not patient:
+        return HttpResponse("Patient not found or database error.", status=404)
+
+    # Create PDF Buffer
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4)
+    elements = []
+
+    # Define Styles
+    styles = getSampleStyleSheet()
+    title_style = styles["Title"]
+    title_style_left = ParagraphStyle(
+        'TitleLeft', 
+        fontSize=14, 
+        spaceAfter=10, 
+        textColor=colors.darkblue,
+        alignment=0  # Align left (0 is left-aligned, 1 is center, 2 is right)
+    )
+    subtitle_style = ParagraphStyle('SubtitleStyle', fontSize=12, spaceAfter=10, textColor=colors.darkblue)
+
+    # Add Hospital Logo
+    logo_path = "HMIS_App/static/images/regional-logo.webp"  # Replace with your logo path
+    elements.append(Image(logo_path, width=100, height=80))
+
+    # Title
+    elements.append(Paragraph("Patient Report", title_style))
+
+    elements.append(Paragraph("Patient Information", title_style_left))
+    elements.append(Spacer(1, 0.2 * inch))
+
+    # Patient Details Table
+    patient_info = [
+        ["Patient ID:", patient[0]],
+        ["Name:", patient[1]],
+        ["Age:", patient[2]],
+        ["Gender:", patient[3]]
+    ]
+
+    # Create the Table for Patient Info
+    patient_table = Table(patient_info, colWidths=[120, 250])
+    patient_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightblue),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+        ('GRID', (0, 0), (-1, -1), 1, colors.gray),
+    ]))
+
+    elements.append(patient_table)
+    elements.append(Spacer(1, 0.3 * inch))
+
+    # Dependent Information
+    dependent_info = [
+        ["Dependent Name:", patient[4]],
+        ["Insurance:", patient[5]]
+    ]
+
+    # Create the Table for Dependent Info
+    dependent_table = Table(dependent_info, colWidths=[120, 250])
+    dependent_table.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.lightgreen),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+        ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+        ('BACKGROUND', (0, 1), (-1, -1), colors.whitesmoke),
+        ('GRID', (0, 0), (-1, -1), 1, colors.gray),
+    ]))
+
+    elements.append(Paragraph("Dependent Information", title_style_left))
+    elements.append(dependent_table)
+    elements.append(Spacer(1, 0.3 * inch))
+
+
+    def footer(canvas, doc):
+        canvas.saveState()
+        canvas.setFont("Helvetica", 9)
+        canvas.drawString(250, 30, "Hospital Management System | Page %d" % (doc.page))
+        canvas.restoreState()
+
+    # Build PDF
+    doc.build(elements, onFirstPage=footer, onLaterPages=footer)
+    buffer.seek(0)
+
+    return HttpResponse(buffer, content_type='application/pdf')
+
+
+
+
+
+
+
+
+
+
+
+######################################################################
+
+
+
+import pandas as pd
+from django.http import HttpResponse
+from django.db import connection
+from django.utils.dateparse import parse_date
+
+def download_patient_excel(request):
+    # Get start and end dates from request parameters
+    start_date = request.GET.get("start_date")
+    end_date = request.GET.get("end_date")
+
+    # Validate and parse the dates
+    if start_date and end_date:
+        try:
+            start_date = parse_date(start_date)
+            end_date = parse_date(end_date)
+        except ValueError:
+            return HttpResponse("Invalid date format. Use YYYY-MM-DD.", status=400)
+
+    # Construct SQL query with optional date filtering
+    query = "SELECT * FROM patients"
+    params = []
+
+    if start_date and end_date:
+        query += " WHERE admission_date BETWEEN %s AND %s"
+        params.extend([start_date, end_date])  # Use actual column name if different
+
+    # Execute the query
+    with connection.cursor() as cursor:
+        cursor.execute(query, params)
+        rows = cursor.fetchall()
+        columns = [col[0] for col in cursor.description]
+
+    # Convert results to DataFrame
+    df = pd.DataFrame(rows, columns=columns)
+
+    # Convert any datetime columns to timezone-naive
+    for column in df.columns:
+        if pd.api.types.is_datetime64_any_dtype(df[column]):
+            df[column] = df[column].dt.tz_localize(None)
+
+    # Create an HTTP response with Excel content type
+    response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+    response["Content-Disposition"] = 'attachment; filename="patients_filtered.xlsx"'
+
+    # Write DataFrame to Excel
+    df.to_excel(response, index=False)
+
+    return response
+
+
+
+############################################    Patient managemen report #####################################################
+
+
+import openpyxl
+from django.http import HttpResponse
+from django.db import connection
+
+def download_patient_excel(request):
+    # SQL query to fetch patient data
+    query = """
+        SELECT patient_id, full_name, date_of_birth, age, gender, address,
+               phone_number, email, dependent_name, dependent_contact,
+               insurance, registered_by
+        FROM patients;
+    """
+    
+    # Execute the SQL query
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        patients = cursor.fetchall()
+
+    # Create a workbook and sheet
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Patients"
+
+    # Add headers to the Excel file
+    headers = ["Patient ID", "Full Name", "Date of Birth", "Age", "Gender", "Address", "Phone Number", "Email", "Dependent Name", "Dependent Contact", "Insurance", "Registered By"]
+    ws.append(headers)
+
+    # Add patient data to the sheet
+    for patient in patients:
+        ws.append(patient)
+
+    # Set the response type and filename for download
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = 'attachment; filename="patients.xlsx"'
+
+    # Save the workbook to the response
+    wb.save(response)
+    return response
+
+
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.units import inch
+from reportlab.lib import colors
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.enums import TA_CENTER, TA_LEFT
+from datetime import datetime
+
+def download_patient_pdf(request, patient_id):
+    # SQL query to fetch a specific patient's data
+    query = """
+        SELECT patient_id, full_name, date_of_birth, age, gender, address,
+               phone_number, email, dependent_name, dependent_contact,
+               insurance, registered_by
+        FROM patients
+        WHERE patient_id = %s;
+    """
+    
+    # Execute the SQL query
+    with connection.cursor() as cursor:
+        cursor.execute(query, [patient_id])
+        patient = cursor.fetchone()
+
+    if patient is None:
+        return HttpResponse('Patient not found.', status=404)
+
+    # Create a PDF response
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="patient_{patient_id}_{datetime.now().strftime("%Y%m%d")}.pdf"'
+
+    # Set up the PDF document with smaller margins
+    doc = SimpleDocTemplate(
+        response,
+        pagesize=letter,
+        rightMargin=36,  # Reduced from 72
+        leftMargin=36,   # Reduced from 72
+        topMargin=36,    # Reduced from 72
+        bottomMargin=36  # Reduced from 72
+    )
+    
+    elements = []
+
+    # Create custom styles with reduced sizes and spacing
+    styles = getSampleStyleSheet()
+    
+    # Custom title style - reduced size and spacing
+    title_style = ParagraphStyle(
+        'CustomTitle',
+        parent=styles['Title'],
+        fontSize=16,     # Reduced from 24
+        spaceAfter=10,   # Reduced from 30
+        textColor=colors.HexColor('#2C3E50'),
+        alignment=TA_CENTER
+    )
+    
+    # Custom header style - reduced size and spacing
+    header_style = ParagraphStyle(
+        'SectionHeader',
+        parent=styles['Heading1'],
+        fontSize=12,     # Reduced from 14
+        textColor=colors.HexColor('#34495E'),
+        spaceAfter=6,    # Reduced from 12
+        spaceBefore=6    # Reduced from 12
+    )
+    
+    # Custom normal style - reduced size and spacing
+    normal_style = ParagraphStyle(
+        'CustomNormal',
+        parent=styles['Normal'],
+        fontSize=9,      # Reduced from 11
+        textColor=colors.HexColor('#2C3E50'),
+        spaceAfter=4    # Reduced from 8
+    )
+
+    # Add hospital/clinic logo placeholder with reduced spacing
+    elements.append(Paragraph("Limbe Regional Hospital", title_style))
+    elements.append(Spacer(1, 8))  # Reduced from 20
+
+    # Add generated date with compact style
+    date_style = ParagraphStyle('Date', parent=styles['Normal'], 
+                               alignment=TA_CENTER, fontSize=9)
+    date_paragraph = Paragraph(
+        f"Generated on: {datetime.now().strftime('%B %d, %Y')}",
+        date_style
+    )
+    elements.append(date_paragraph)
+    elements.append(Spacer(1, 8))  # Reduced from 30
+
+    # Title for the document
+    title = Paragraph(f"Patient Information", title_style)
+    elements.append(title)
+
+    # Organize patient details into logical sections
+    sections = {
+        'Personal Information': [
+            ('Full Name', patient[1]),
+            ('Date of Birth', patient[2]),
+            ('Age', patient[3]),
+            ('Gender', patient[4])
+        ],
+        'Contact Information': [
+            ('Address', patient[5]),
+            ('Phone Number', patient[6]),
+            ('Email', patient[7])
+        ],
+        'Emergency Contact': [
+            ('Dependent Name', patient[8]),
+            ('Dependent Contact', patient[9])
+        ],
+        'Administrative Information': [
+            ('Patient ID', patient[0]),
+            ('Insurance', patient[10]),
+            ('Registered By', patient[11])
+        ]
+    }
+
+    # Add each section to the PDF with reduced spacing
+    for section_title, details in sections.items():
+        # Add section header
+        elements.append(Paragraph(section_title, header_style))
+        
+        # Create table data
+        table_data = [[Paragraph(label, normal_style), 
+                      Paragraph(str(value), normal_style)] 
+                     for label, value in details]
+        
+        # Create and style the table with reduced spacing
+        table = Table(table_data, colWidths=[1.5*inch, 4.5*inch])  # Adjusted widths
+        table.setStyle(TableStyle([
+            ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+            ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),    # Reduced from 11
+            ('BOTTOMPADDING', (0, 0), (-1, -1), 4),  # Reduced from 8
+            ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#2C3E50')),
+            ('GRID', (0, 0), (-1, -1), 0.25, colors.HexColor('#ECF0F1')),
+            ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#F7F9FA'))
+        ]))
+        
+        elements.append(table)
+        elements.append(Spacer(1, 8))  # Reduced from 20
+
+    # Add footer with page number
+    def add_page_number(canvas, doc):
+        canvas.saveState()
+        canvas.setFont('Helvetica', 8)  # Reduced from 9
+        canvas.setFillColor(colors.HexColor('#95A5A6'))
+        page_number_text = f"Page {doc.page}"
+        canvas.drawCentredString(letter[0]/2, 20, page_number_text)  # Reduced from 40
+        canvas.restoreState()
+
+    # Build the PDF with page numbers
+    doc.build(elements, onFirstPage=add_page_number, onLaterPages=add_page_number)
+
+    return response
+
+
+
+
+
+
+
+####################################   download visit ##########################################
+
